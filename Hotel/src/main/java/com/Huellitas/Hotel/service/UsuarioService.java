@@ -8,8 +8,6 @@ import com.Huellitas.Hotel.model.Usuario;
 import com.Huellitas.Hotel.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +53,28 @@ public class UsuarioService {
                 .map(this::mapearAUsuarioResponseDTO);
     }
 
+    @Transactional
+    public Optional<UsuarioResponseDTO> actualizarUsuario(Long id, UsuarioRequestDTO datos){
+        return usuarioRepository.findById(id)
+                .map(user -> {
+                    user.setNombre(datos.nombre());
+                    user.setTelefono(datos.telefono());
+                    user.setEmail(datos.email());
+                    //user.setContrasena(datos.contrasena()); //Revisar si se deja de esta forma la actualizacion de contrasena
+
+                    Usuario actualizado = usuarioRepository.save(user);
+                    return mapearAUsuarioResponseDTO(actualizado);
+                });
+    }
+
+    @Transactional
+    public boolean eliminarUsuario(Long id){
+        if(!usuarioRepository.existsById(id)){
+            return false;
+        }
+        usuarioRepository.deleteById(id);
+        return true;
+    }
 
 
     //MAPEO
