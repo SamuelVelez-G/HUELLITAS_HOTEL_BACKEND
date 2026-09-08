@@ -1,14 +1,10 @@
 package com.Huellitas.Hotel.model;
-import jakarta.persistence.Entity;
-import jakarta.persistence.id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "especies")
@@ -24,6 +20,6 @@ public class Especie {
     private String nombre;
     @OneToMany(mappedBy = "especie")
     private List<Mascota> mascotas;
-@oneToMany(mappedBy = "especie")
-private List<Servicio> servicios;
+    @OneToMany(mappedBy = "especie")
+    private List<Servicio> servicios = new ArrayList<>();
 }

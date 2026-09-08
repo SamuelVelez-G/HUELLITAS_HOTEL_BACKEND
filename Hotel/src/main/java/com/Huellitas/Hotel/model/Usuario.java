@@ -27,11 +27,15 @@ public class Usuario {
     private String email;
     @Column(nullable = false)
     private String contrasena;
+    @Column(nullable = false)
+    private String rol;
     @Column(name = "fecha_registro", nullable = false)
     private LocalDateTime fechaRegistro;
     @OneToMany(mappedBy = "usuario")
     private List<Mascota> mascotas = new ArrayList<>();
-    @Column(nullable = false)
-    private String rol;
+    @OneToMany(mappedBy = "usuario")
+    private List<Reserva> reservas = new ArrayList<>();
+
+
 
 }
