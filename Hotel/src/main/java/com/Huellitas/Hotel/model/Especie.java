@@ -1,8 +1,12 @@
 package com.Huellitas.Hotel.model;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,15 +15,22 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class Especie {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "nombre", nullable = false)
     private String nombre;
+
     @OneToMany(mappedBy = "especie")
-    private List<Mascota> mascotas;
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Mascota> mascotas = new ArrayList<>();
+
     @OneToMany(mappedBy = "especie")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Servicio> servicios = new ArrayList<>();
 }
