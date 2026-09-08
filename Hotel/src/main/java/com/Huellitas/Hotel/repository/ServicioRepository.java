@@ -1,10 +1,9 @@
 package com.Huellitas.Hotel.repository;
 
-import com.Huellitas.Hotel.model.Mascota;
+import com.Huellitas.Hotel.model.Servicio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MascotaRepository extends JpaRepository<Mascota, Long> {
-
+public interface ServicioRepository extends JpaRepository<Servicio, Long> {
 }
