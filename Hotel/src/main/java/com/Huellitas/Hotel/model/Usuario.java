@@ -28,7 +28,8 @@ public class Usuario {
     @Column(nullable = false)
     private String contrasena;
     @Column(nullable = false)
-    private String rol;
+    @Enumerated(EnumType.STRING)
+    private Rol rol;
     @Column(name = "fecha_registro", nullable = false)
     private LocalDateTime fechaRegistro;
     @OneToMany(mappedBy = "usuario")
