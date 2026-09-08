@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "detalles_reserva")
+@Table(name = "detalles_reservas")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,8 +20,8 @@ public class DetalleReserva {
     @Column(name = "cantidad_de_mascotas", nullable = false)
     private int cantidadDeMascotas;
     @Column(name = "precio_unitario", nullable = false)
-    private Double precioUnitario;
-    private Double subtotal;
+    private double precioUnitario;
+    private double subtotal;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mascota_id", nullable = false)
     private Mascota mascota;
