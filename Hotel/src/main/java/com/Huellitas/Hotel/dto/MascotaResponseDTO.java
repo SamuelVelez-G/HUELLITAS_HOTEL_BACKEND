@@ -5,5 +5,6 @@ public record MascotaResponseDTO(
         String nombre,
         String raza,
         Integer edad,
-        EspecieResumenDTO especie
+        EspecieResumenDTO especie,
+        UsuarioResumenDTO usuario
 ) {}

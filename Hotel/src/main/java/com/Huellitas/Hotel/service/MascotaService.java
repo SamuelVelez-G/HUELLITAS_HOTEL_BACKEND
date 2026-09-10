@@ -3,10 +3,13 @@ package com.Huellitas.Hotel.service;
 import com.Huellitas.Hotel.dto.EspecieResumenDTO;
 import com.Huellitas.Hotel.dto.MascotaRequestDTO;
 import com.Huellitas.Hotel.dto.MascotaResponseDTO;
+import com.Huellitas.Hotel.dto.UsuarioResumenDTO;
 import com.Huellitas.Hotel.model.Especie;
 import com.Huellitas.Hotel.model.Mascota;
+import com.Huellitas.Hotel.model.Usuario;
 import com.Huellitas.Hotel.repository.EspecieRepository;
 import com.Huellitas.Hotel.repository.MascotaRepository;
+import com.Huellitas.Hotel.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +21,14 @@ public class MascotaService {
 
     private final MascotaRepository mascotaRepository;
     private final EspecieRepository especieRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public MascotaService(MascotaRepository mascotaRepository, EspecieRepository especieRepository) {
+    public MascotaService(MascotaRepository mascotaRepository,
+                          EspecieRepository especieRepository,
+                          UsuarioRepository usuarioRepository) {
         this.mascotaRepository = mascotaRepository;
         this.especieRepository = especieRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Transactional(readOnly = true)
@@ -39,9 +46,10 @@ public class MascotaService {
     @Transactional
     public Optional<MascotaResponseDTO> crear(MascotaRequestDTO dto) {
         Optional<Especie> especie = especieRepository.findById(dto.especieId());
+        Optional<Usuario> usuario = usuarioRepository.findById(dto.usuarioId());
 
-        if (especie.isEmpty()) {
-            return Optional.empty(); // el cliente mandó un especieId que no existe
+        if (especie.isEmpty() || usuario.isEmpty()) {
+            return Optional.empty(); // especieId o usuarioId inválidos
         }
 
         Mascota mascota = new Mascota();
@@ -49,6 +57,7 @@ public class MascotaService {
         mascota.setRaza(dto.raza());
         mascota.setEdad(dto.edad());
         mascota.setEspecie(especie.get());
+        mascota.setUsuario(usuario.get());
 
         return Optional.of(aResponseDTO(mascotaRepository.save(mascota)));
     }
@@ -56,8 +65,9 @@ public class MascotaService {
     @Transactional
     public Optional<MascotaResponseDTO> actualizar(Long id, MascotaRequestDTO dto) {
         Optional<Especie> especie = especieRepository.findById(dto.especieId());
+        Optional<Usuario> usuario = usuarioRepository.findById(dto.usuarioId());
 
-        if (especie.isEmpty()) {
+        if (especie.isEmpty() || usuario.isEmpty()) {
             return Optional.empty();
         }
 
@@ -66,6 +76,7 @@ public class MascotaService {
             existente.setRaza(dto.raza());
             existente.setEdad(dto.edad());
             existente.setEspecie(especie.get());
+            existente.setUsuario(usuario.get());
             return aResponseDTO(mascotaRepository.save(existente));
         });
     }
@@ -79,14 +90,14 @@ public class MascotaService {
         return false;
     }
 
-    // Convierte la entidad en su DTO de respuesta
     private MascotaResponseDTO aResponseDTO(Mascota mascota) {
         return new MascotaResponseDTO(
                 mascota.getId(),
                 mascota.getNombre(),
                 mascota.getRaza(),
                 mascota.getEdad(),
-                new EspecieResumenDTO(mascota.getEspecie().getId(), mascota.getEspecie().getNombre())
+                new EspecieResumenDTO(mascota.getEspecie().getId(), mascota.getEspecie().getNombre()),
+                new UsuarioResumenDTO(mascota.getUsuario().getId(), mascota.getUsuario().getNombre())
         );
     }
 }
