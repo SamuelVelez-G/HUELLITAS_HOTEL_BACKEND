@@ -11,13 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UsuarioService {
-    public final UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     //CRUD
@@ -31,7 +34,7 @@ public class UsuarioService {
         usuario.setNombre(datos.nombre());
         usuario.setTelefono(datos.telefono());
         usuario.setEmail(datos.email());
-        usuario.setContrasena(datos.contrasena());
+        usuario.setContrasena(passwordEncoder.encode(datos.contrasena()));
         usuario.setRol(Rol.USER);
         usuario.setFechaRegistro(LocalDateTime.now());
 
