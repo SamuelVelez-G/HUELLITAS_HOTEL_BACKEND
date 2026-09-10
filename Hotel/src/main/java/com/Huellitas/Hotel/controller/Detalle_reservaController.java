@@ -15,25 +15,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Detalle_reservaController {
 
-n    private final Detalle_reservaService detalleService;
+    private final Detalle_reservaService detalleService;
 
-n    @PostMapping
+    @PostMapping
     public ResponseEntity<Detalle_reservaResponseDTO> crear(@RequestBody Detalle_reservaRequestDTO dto) {
         Detalle_reservaResponseDTO saved = detalleService.crear(dto);
         return ResponseEntity.ok(saved);
     }
 
-n    @GetMapping("/{id}")
+     @GetMapping("/{id}")
     public ResponseEntity<Detalle_reservaResponseDTO> obtener(@PathVariable Long id) {
         return ResponseEntity.ok(detalleService.obtenerPorId(id));
     }
 
-n    @GetMapping("/reserva/{reservaId}")
+    @GetMapping("/reserva/{reservaId}")
     public ResponseEntity<List<Detalle_reservaResumenDTO>> listarPorReserva(@PathVariable Long reservaId) {
         return ResponseEntity.ok(detalleService.listarPorReserva(reservaId));
     }
 
-n    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         detalleService.eliminar(id);
         return ResponseEntity.noContent().build();
