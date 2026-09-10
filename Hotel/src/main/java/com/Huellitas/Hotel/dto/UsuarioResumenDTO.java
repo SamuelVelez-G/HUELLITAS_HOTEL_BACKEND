@@ -1,5 +1,3 @@
 package com.Huellitas.Hotel.dto;
 
-public class UsuarioResumenDTO {
-
-}
+public record UsuarioResumenDTO(Long id, String nombre) {}

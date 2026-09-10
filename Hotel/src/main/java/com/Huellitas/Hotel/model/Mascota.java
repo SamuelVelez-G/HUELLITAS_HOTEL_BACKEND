@@ -34,6 +34,14 @@ public class Mascota {
     @EqualsAndHashCode.Exclude
     private Especie especie;
 
+    // Ya activo: Usuario existe y tiene @OneToMany(mappedBy = "usuario")
+    // apuntando exactamente a este campo.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Usuario usuario;
+
     @OneToMany(mappedBy = "mascota")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
