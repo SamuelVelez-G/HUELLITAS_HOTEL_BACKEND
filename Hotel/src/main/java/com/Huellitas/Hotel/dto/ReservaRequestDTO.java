@@ -1,5 +1,9 @@
 package com.Huellitas.Hotel.dto;
 
-public class ReservaRequestDTO {
-
-}
+public record MascotaRequestDTO(
+        String nombre,
+        String raza,
+        Integer edad,
+        Long especieId,
+        Long usuarioId
+) {}
