@@ -3,7 +3,7 @@ package com.Huellitas.Hotel.service;
 import com.Huellitas.Hotel.dto.MascotaResumenDTO;
 import com.Huellitas.Hotel.dto.UsuarioRequestDTO;
 import com.Huellitas.Hotel.dto.UsuarioResponseDTO;
-import com.Huellitas.Hotel.model.Rol;
+import com.Huellitas.Hotel.model.RolUsuario;
 import com.Huellitas.Hotel.model.Usuario;
 import com.Huellitas.Hotel.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
@@ -11,12 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Service
 public class UsuarioService {
-    public final UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     //CRUD
@@ -30,8 +34,8 @@ public class UsuarioService {
         usuario.setNombre(datos.nombre());
         usuario.setTelefono(datos.telefono());
         usuario.setEmail(datos.email());
-        usuario.setContrasena(datos.contrasena());
-        usuario.setRol(Rol.USER);
+        usuario.setContrasena(passwordEncoder.encode(datos.contrasena()));
+        usuario.setRol(RolUsuario.CLIENTE);
         usuario.setFechaRegistro(LocalDateTime.now());
 
         Usuario creado = usuarioRepository.save(usuario);
@@ -84,8 +88,7 @@ public class UsuarioService {
                 .stream()
                 .map(mascota -> new MascotaResumenDTO(
                         mascota.getId(),
-                        mascota.getNombre(),
-                        mascota.getEspecie().getNombre()
+                        mascota.getNombre()
                 ))
                 .toList();
         return new UsuarioResponseDTO(

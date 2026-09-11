@@ -1,6 +1,5 @@
 package com.Huellitas.Hotel.dto;
 
-import com.Huellitas.Hotel.model.Rol;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

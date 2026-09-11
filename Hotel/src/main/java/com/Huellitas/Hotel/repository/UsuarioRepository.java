@@ -2,11 +2,12 @@ package com.Huellitas.Hotel.repository;
 
 import com.Huellitas.Hotel.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface UsuarioRepository  extends JpaRepository<Usuario, Long> {
+import java.util.Optional;
+
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+
+    Optional<Usuario> findByEmail(String email);
 
     boolean existsByEmail(String email);
-
 }

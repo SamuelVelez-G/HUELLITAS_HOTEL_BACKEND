@@ -3,7 +3,12 @@ package com.Huellitas.Hotel.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "mascotas")
@@ -19,16 +24,26 @@ public class Mascota {
     @Column(nullable = false)
     private String nombre;
 
-    @Column
-    private Integer cantidad;
+    private String raza;
+
+    private Integer edad;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "especie_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Especie especie;
 
-    // Este es el lado dueño de la relación: Usuario.mascotas usa
-    // mappedBy = "usuario", así que este campo DEBE llamarse "usuario".
+    // Ya activo: Usuario existe y tiene @OneToMany(mappedBy = "usuario")
+    // apuntando exactamente a este campo.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Usuario usuario;
+
+    @OneToMany(mappedBy = "mascota")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<DetalleReserva> detalles = new ArrayList<>();
 }
