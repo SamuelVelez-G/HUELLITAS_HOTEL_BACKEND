@@ -45,5 +45,5 @@ public class Mascota {
     @OneToMany(mappedBy = "mascota")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private List<Detalle_reserva> detalles = new ArrayList<>();
+    private List<DetalleReserva> detalles = new ArrayList<>();
 }
