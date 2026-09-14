@@ -1,6 +1,6 @@
 package com.Huellitas.Hotel.dto;
 
-import com.Huellitas.Hotel.model.Rol;
+import com.Huellitas.Hotel.model.RolUsuario;
 import com.Huellitas.Hotel.model.Mascota;
 
 import java.util.List;

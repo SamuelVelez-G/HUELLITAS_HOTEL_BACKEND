@@ -9,10 +9,4 @@ public record LoginRequestDTO(
         String email,
 
         @NotBlank(message = "La contraseña es obligatoria")
-        String contrasena
-) {
-<<<<<<< HEAD
-}
-=======
-}
->>>>>>> ramaNat
+        String contrasena) {};
