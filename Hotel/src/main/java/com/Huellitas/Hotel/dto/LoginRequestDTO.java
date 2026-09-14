@@ -11,4 +11,8 @@ public record LoginRequestDTO(
         @NotBlank(message = "La contraseña es obligatoria")
         String contrasena
 ) {
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> ramaNat

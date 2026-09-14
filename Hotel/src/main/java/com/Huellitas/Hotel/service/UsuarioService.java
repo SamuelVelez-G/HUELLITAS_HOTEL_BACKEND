@@ -6,12 +6,13 @@ import com.Huellitas.Hotel.dto.UsuarioResponseDTO;
 import com.Huellitas.Hotel.model.RolUsuario;
 import com.Huellitas.Hotel.model.Usuario;
 import com.Huellitas.Hotel.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UsuarioService {
@@ -23,13 +24,12 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    //CRUD
-
     @Transactional
-    public UsuarioResponseDTO crearUsuario(UsuarioRequestDTO datos){
-        if(usuarioRepository.existsByEmail(datos.email())){
+    public UsuarioResponseDTO crearUsuario(UsuarioRequestDTO datos) {
+        if (usuarioRepository.existsByEmail(datos.email())) {
             throw new IllegalArgumentException("El email ya está registrado");
         }
+
         Usuario usuario = new Usuario();
         usuario.setNombre(datos.nombre());
         usuario.setTelefono(datos.telefono());
@@ -43,7 +43,7 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public List<UsuarioResponseDTO> buscarUsuarios(){
+    public List<UsuarioResponseDTO> buscarUsuarios() {
         return usuarioRepository.findAll()
                 .stream()
                 .map(this::mapearAUsuarioResponseDTO)
@@ -51,52 +51,51 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<UsuarioResponseDTO> buscarUsuarioId(Long id){
+    public Optional<UsuarioResponseDTO> buscarUsuarioId(Long id) {
         return usuarioRepository.findById(id)
                 .map(this::mapearAUsuarioResponseDTO);
     }
 
     @Transactional
-    public Optional<UsuarioResponseDTO> actualizarUsuario(Long id, UsuarioRequestDTO datos){
+    public Optional<UsuarioResponseDTO> actualizarUsuario(Long id, UsuarioRequestDTO datos) {
         return usuarioRepository.findById(id)
-                .map(user -> {
-                    user.setNombre(datos.nombre());
-                    user.setTelefono(datos.telefono());
-                    user.setEmail(datos.email());
-                    //user.setContrasena(datos.contrasena()); //Revisar si se deja de esta forma la actualizacion de contrasena
+                .map(usuario -> {
+                    if (!usuario.getEmail().equalsIgnoreCase(datos.email())
+                            && usuarioRepository.existsByEmail(datos.email())) {
+                        throw new IllegalArgumentException("El email ya está registrado");
+                    }
 
-                    Usuario actualizado = usuarioRepository.save(user);
+                    usuario.setNombre(datos.nombre());
+                    usuario.setTelefono(datos.telefono());
+                    usuario.setEmail(datos.email());
+
+                    Usuario actualizado = usuarioRepository.save(usuario);
                     return mapearAUsuarioResponseDTO(actualizado);
                 });
     }
 
     @Transactional
-    public boolean eliminarUsuario(Long id){
-        if(!usuarioRepository.existsById(id)){
+    public boolean eliminarUsuario(Long id) {
+        if (!usuarioRepository.existsById(id)) {
             return false;
         }
         usuarioRepository.deleteById(id);
         return true;
     }
 
+    private UsuarioResponseDTO mapearAUsuarioResponseDTO(Usuario usuario) {
+        List<MascotaResumenDTO> mascotas = usuario.getMascotas() == null
+                ? List.of()
+                : usuario.getMascotas().stream()
+                    .map(mascota -> new MascotaResumenDTO(mascota.getId(), mascota.getNombre()))
+                    .toList();
 
-    //MAPEO
-
-    //FALTA VALIDAR CAMPOS DE MASCOTA RESUMEN DTO
-    private UsuarioResponseDTO mapearAUsuarioResponseDTO(Usuario usuario){
-        List<MascotaResumenDTO> mascotaResumen = usuario.getMascotas()
-                .stream()
-                .map(mascota -> new MascotaResumenDTO(
-                        mascota.getId(),
-                        mascota.getNombre()
-                ))
-                .toList();
         return new UsuarioResponseDTO(
                 usuario.getId(),
                 usuario.getNombre(),
                 usuario.getTelefono(),
                 usuario.getEmail(),
-                mascotaResumen
+                mascotas
         );
     }
 }
