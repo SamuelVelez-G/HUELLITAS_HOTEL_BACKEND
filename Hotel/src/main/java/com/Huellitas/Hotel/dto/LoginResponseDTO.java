@@ -1,10 +1,10 @@
 package com.Huellitas.Hotel.dto;
 
-import com.Huellitas.Hotel.model.Rol;
+import com.Huellitas.Hotel.model.RolUsuario;
 
 public record LoginResponseDTO(
         String token,
-        String username,
-        Rol rol
+        String email,
+        RolUsuario rol
 ) {
 }
