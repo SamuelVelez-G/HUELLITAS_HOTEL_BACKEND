@@ -1,10 +1,16 @@
 package com.Huellitas.Hotel.service;
 
+import com.Huellitas.Hotel.dto.EspecieResponseDTO;
+import com.Huellitas.Hotel.dto.ServicioRequestDTO;
+import com.Huellitas.Hotel.dto.ServicioResponseDTO;
+import com.Huellitas.Hotel.model.Especie;
 import com.Huellitas.Hotel.model.Servicio;
+import com.Huellitas.Hotel.repository.EspecieRepository;
 import com.Huellitas.Hotel.repository.ServicioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,11 +40,9 @@ public class ServicioService {
 
     @Transactional
     public ServicioResponseDTO guardar(ServicioRequestDTO dto) {
-        // 1. Buscar la Especie en la BD mediante el ID que viene en el Record DTO
         Especie especie = especieRepository.findById(dto.idEspecie())
                 .orElseThrow(() -> new EntityNotFoundException("Especie no encontrada con id: " + dto.idEspecie()));
 
-        // 2. Mapear del DTO a la Entidad Servicio
         Servicio servicio = new Servicio();
         servicio.setNombre(dto.nombre());
         servicio.setImagen(dto.imagen());
@@ -46,9 +50,8 @@ public class ServicioService {
         servicio.setPrecio(dto.precio());
         servicio.setDisponible(dto.disponible());
         servicio.setFechaCreacion(LocalDateTime.now());
-        servicio.setEspecie(especie); // <--- Asignación clave de la relación JPA
+        servicio.setEspecie(especie);
 
-        // 3. Guardar en BD y responder DTO
         Servicio guardado = servicioRepository.save(servicio);
         return aResponseDTO(guardado);
     }
@@ -96,9 +99,7 @@ public class ServicioService {
                 .toList();
     }
 
-    // ==========================================
-    // MÁPER PRIVADO (Entidad -> Response DTO)
-    // ==========================================
+
     private ServicioResponseDTO aResponseDTO(Servicio servicio) {
         EspecieResponseDTO especieDTO = servicio.getEspecie() != null
                 ? new EspecieResponseDTO(servicio.getEspecie().getId(), servicio.getEspecie().getNombre())
