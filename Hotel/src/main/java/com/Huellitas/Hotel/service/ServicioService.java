@@ -15,34 +15,64 @@ import java.util.Optional;
 public class ServicioService {
 
     private final ServicioRepository servicioRepository;
+    private final EspecieRepository especieRepository; // <--- Inyección necesaria para enlazar la especie
 
-    public List<Servicio> listarTodos() {
-        return servicioRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<ServicioResponseDTO> listarTodos() {
+        return servicioRepository.findAll()
+                .stream()
+                .map(this::aResponseDTO)
+                .toList();
     }
 
-    public Optional<Servicio> buscarPorId(Long id) {
-        return servicioRepository.findById(id);
+    @Transactional(readOnly = true)
+    public ServicioResponseDTO buscarPorId(Long id) {
+        Servicio servicio = servicioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Servicio no encontrado con id: " + id));
+        return aResponseDTO(servicio);
     }
 
-    public Servicio guardar(Servicio servicio) {
+    @Transactional
+    public ServicioResponseDTO guardar(ServicioRequestDTO dto) {
+        // 1. Buscar la Especie en la BD mediante el ID que viene en el Record DTO
+        Especie especie = especieRepository.findById(dto.idEspecie())
+                .orElseThrow(() -> new EntityNotFoundException("Especie no encontrada con id: " + dto.idEspecie()));
+
+        // 2. Mapear del DTO a la Entidad Servicio
+        Servicio servicio = new Servicio();
+        servicio.setNombre(dto.nombre());
+        servicio.setImagen(dto.imagen());
+        servicio.setDescripcion(dto.descripcion());
+        servicio.setPrecio(dto.precio());
+        servicio.setDisponible(dto.disponible());
         servicio.setFechaCreacion(LocalDateTime.now());
-        return servicioRepository.save(servicio);
+        servicio.setEspecie(especie); // <--- Asignación clave de la relación JPA
+
+        // 3. Guardar en BD y responder DTO
+        Servicio guardado = servicioRepository.save(servicio);
+        return aResponseDTO(guardado);
     }
 
-    public Servicio actualizar(Long id, Servicio servicioActualizado) {
+    @Transactional
+    public ServicioResponseDTO actualizar(Long id, ServicioRequestDTO dto) {
         Servicio servicioExistente = servicioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Servicio no encontrado con id: " + id));
 
-        servicioExistente.setNombre(servicioActualizado.getNombre());
-        servicioExistente.setImagen(servicioActualizado.getImagen());
-        servicioExistente.setDescripcion(servicioActualizado.getDescripcion());
-        servicioExistente.setPrecio(servicioActualizado.getPrecio());
-        servicioExistente.setDisponible(servicioActualizado.getDisponible());
-        servicioExistente.setEspecie(servicioActualizado.getEspecie());
+        Especie especie = especieRepository.findById(dto.idEspecie())
+                .orElseThrow(() -> new EntityNotFoundException("Especie no encontrada con id: " + dto.idEspecie()));
 
-        return servicioRepository.save(servicioExistente);
+        servicioExistente.setNombre(dto.nombre());
+        servicioExistente.setImagen(dto.imagen());
+        servicioExistente.setDescripcion(dto.descripcion());
+        servicioExistente.setPrecio(dto.precio());
+        servicioExistente.setDisponible(dto.disponible());
+        servicioExistente.setEspecie(especie);
+
+        Servicio actualizado = servicioRepository.save(servicioExistente);
+        return aResponseDTO(actualizado);
     }
 
+    @Transactional
     public void eliminar(Long id) {
         if (!servicioRepository.existsById(id)) {
             throw new EntityNotFoundException("Servicio no encontrado con id: " + id);
@@ -50,11 +80,39 @@ public class ServicioService {
         servicioRepository.deleteById(id);
     }
 
-    public List<Servicio> listarDisponibles() {
-        return servicioRepository.findByDisponibleTrue();
+    @Transactional(readOnly = true)
+    public List<ServicioResponseDTO> listarDisponibles() {
+        return servicioRepository.findByDisponibleTrue()
+                .stream()
+                .map(this::aResponseDTO)
+                .toList();
     }
 
-    public List<Servicio> listarPorEspecie(Long especieId) {
-        return servicioRepository.findByEspecieId(especieId);
+    @Transactional(readOnly = true)
+    public List<ServicioResponseDTO> listarPorEspecie(Long especieId) {
+        return servicioRepository.findByEspecieId(especieId)
+                .stream()
+                .map(this::aResponseDTO)
+                .toList();
+    }
+
+    // ==========================================
+    // MÁPER PRIVADO (Entidad -> Response DTO)
+    // ==========================================
+    private ServicioResponseDTO aResponseDTO(Servicio servicio) {
+        EspecieResponseDTO especieDTO = servicio.getEspecie() != null
+                ? new EspecieResponseDTO(servicio.getEspecie().getId(), servicio.getEspecie().getNombre())
+                : null;
+
+        return new ServicioResponseDTO(
+                servicio.getId(),
+                servicio.getNombre(),
+                servicio.getImagen(),
+                servicio.getDescripcion(),
+                servicio.getPrecio(),
+                servicio.getDisponible(),
+                servicio.getFechaCreacion(),
+                especieDTO
+        );
     }
 }
