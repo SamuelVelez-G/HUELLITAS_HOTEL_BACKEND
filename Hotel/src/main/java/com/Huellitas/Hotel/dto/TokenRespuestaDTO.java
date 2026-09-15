@@ -1,4 +1,6 @@
 package com.Huellitas.Hotel.dto;
 
-public record TokenRespuestaDTO(String token) {
+public record TokenRespuestaDTO(
+        String token
+) {
 }

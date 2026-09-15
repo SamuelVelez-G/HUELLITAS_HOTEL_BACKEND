@@ -1,8 +1,11 @@
 package com.Huellitas.Hotel.controller;
 
+import com.Huellitas.Hotel.dto.ServicioRequestDTO;
+import com.Huellitas.Hotel.dto.ServicioResponseDTO;
 import com.Huellitas.Hotel.model.Servicio;
 import com.Huellitas.Hotel.service.ServicioService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,49 +21,38 @@ public class ServicioController {
     private final ServicioService servicioService;
 
     @GetMapping
-    public ResponseEntity<List<Servicio>> listarTodos() {
+    public ResponseEntity<List<ServicioResponseDTO>> listarTodos() {
         return ResponseEntity.ok(servicioService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Servicio> buscarPorId(@PathVariable Long id) {
-        return servicioService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ServicioResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(servicioService.buscarPorId(id));
     }
 
     @GetMapping("/disponibles")
-    public ResponseEntity<List<Servicio>> listarDisponibles() {
+    public ResponseEntity<List<ServicioResponseDTO>> listarDisponibles() {
         return ResponseEntity.ok(servicioService.listarDisponibles());
     }
 
     @GetMapping("/especie/{especieId}")
-    public ResponseEntity<List<Servicio>> listarPorEspecie(@PathVariable Long especieId) {
+    public ResponseEntity<List<ServicioResponseDTO>> listarPorEspecie(@PathVariable Long especieId) {
         return ResponseEntity.ok(servicioService.listarPorEspecie(especieId));
     }
 
     @PostMapping
-    public ResponseEntity<Servicio> crear(@RequestBody Servicio servicio) {
-        Servicio nuevo = servicioService.guardar(servicio);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
+    public ResponseEntity<ServicioResponseDTO> crear(@RequestBody @Valid ServicioRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(servicioService.guardar(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Servicio> actualizar(@PathVariable Long id, @RequestBody Servicio servicio) {
-        try {
-            return ResponseEntity.ok(servicioService.actualizar(id, servicio));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<ServicioResponseDTO> actualizar(@PathVariable Long id, @RequestBody @Valid ServicioRequestDTO dto) {
+        return ResponseEntity.ok(servicioService.actualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        try {
-            servicioService.eliminar(id);
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        servicioService.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 }

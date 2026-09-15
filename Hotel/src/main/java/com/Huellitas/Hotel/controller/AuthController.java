@@ -21,18 +21,34 @@ public class AuthController {
     private final AuthenticationManager administradorAutenticacion;
     private final JwtServicio jwtServicio;
 
-    public AuthController(AuthenticationManager administradorAutenticacion, JwtServicio jwtServicio) {
+    public AuthController(
+            AuthenticationManager administradorAutenticacion,
+            JwtServicio jwtServicio
+    ) {
         this.administradorAutenticacion = administradorAutenticacion;
         this.jwtServicio = jwtServicio;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenRespuestaDTO> iniciarSesion(@RequestBody @Valid LoginRequestDTO datos) {
-        Authentication autenticacion = administradorAutenticacion.authenticate(
-                new UsernamePasswordAuthenticationToken(datos.email(), datos.contrasena())
-        );
+    public ResponseEntity<TokenRespuestaDTO> iniciarSesion(
+            @RequestBody @Valid LoginRequestDTO datos
+    ) {
 
-        String token = jwtServicio.generarToken(autenticacion.getName());
-        return ResponseEntity.ok(new TokenRespuestaDTO(token));
+        Authentication autenticacion =
+                administradorAutenticacion.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                datos.email(),
+                                datos.contrasena()
+                        )
+                );
+
+        String token =
+                jwtServicio.generarToken(
+                        autenticacion.getName()
+                );
+
+        return ResponseEntity.ok(
+                new TokenRespuestaDTO(token)
+        );
     }
 }

@@ -1,6 +1,6 @@
 package com.Huellitas.Hotel.dto;
-
-import com.Huellitas.Hotel.model.RolUsuario;
+//falta crear el model de rol
+//import com.Huellitas.Hotel.model.Rol;
 import com.Huellitas.Hotel.model.Mascota;
 
 import java.util.List;

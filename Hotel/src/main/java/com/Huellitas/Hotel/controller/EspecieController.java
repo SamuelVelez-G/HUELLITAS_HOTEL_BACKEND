@@ -1,8 +1,9 @@
 package com.Huellitas.Hotel.controller;
 
-import com.Huellitas.Hotel.model.Especie;
+import com.Huellitas.Hotel.dto.EspecieRequestDTO;
+import com.Huellitas.Hotel.dto.EspecieResponseDTO;
 import com.Huellitas.Hotel.service.EspecieService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,27 +14,29 @@ import java.util.List;
 @RequestMapping("/api/especies")
 public class EspecieController {
 
-    @Autowired
-    private EspecieService especieService;
+    private final EspecieService especieService;
+
+    public EspecieController(EspecieService especieService) {
+        this.especieService = especieService;
+    }
 
     @GetMapping
-    public ResponseEntity<List<Especie>> listarTodas() {
+    public ResponseEntity<List<EspecieResponseDTO>> listarTodas() {
         return ResponseEntity.ok(especieService.listarTodas());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Especie> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<EspecieResponseDTO> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(especieService.obtenerPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<Especie> crear(@RequestBody Especie especie) {
-        Especie nueva = especieService.guardar(especie);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
+    public ResponseEntity<EspecieResponseDTO> crear(@RequestBody @Valid EspecieRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(especieService.guardar(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Especie> actualizar(@PathVariable Long id, @RequestBody Especie especie) {
+    public ResponseEntity<EspecieResponseDTO> actualizar(@PathVariable Long id, @RequestBody @Valid EspecieRequestDTO especie) {
         return ResponseEntity.ok(especieService.actualizar(id, especie));
     }
 

@@ -1,5 +1,9 @@
 package com.Huellitas.Hotel.dto;
 
-public class EspecieRequestDTO {
+import jakarta.validation.constraints.NotBlank;
 
+public record EspecieRequestDTO(
+        @NotBlank(message = "El nombre de la especie es obligatorio")
+        String nombre
+) {
 }
