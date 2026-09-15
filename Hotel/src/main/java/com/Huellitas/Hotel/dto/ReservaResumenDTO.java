@@ -1,5 +1,10 @@
 package com.Huellitas.Hotel.dto;
 
-public class ReservaResumenDTO {
+import java.time.LocalDateTime;
 
+public record ReservaResumenDTO(
+        Long id,
+        LocalDateTime fechaInicio,
+        LocalDateTime fechaFin
+) {
 }

@@ -1,9 +1,5 @@
 package com.Huellitas.Hotel.controller;
 
-<<<<<<< Updated upstream
-public class Detalle_reservaController {
-
-=======
 import com.Huellitas.Hotel.dto.Detalle_reservaRequestDTO;
 import com.Huellitas.Hotel.dto.Detalle_reservaResponseDTO;
 import com.Huellitas.Hotel.dto.Detalle_reservaResumenDTO;
@@ -27,7 +23,7 @@ public class Detalle_reservaController {
         return ResponseEntity.ok(saved);
     }
 
-    @GetMapping("/{id}")
+     @GetMapping("/{id}")
     public ResponseEntity<Detalle_reservaResponseDTO> obtener(@PathVariable Long id) {
         return ResponseEntity.ok(detalleService.obtenerPorId(id));
     }
@@ -42,5 +38,4 @@ public class Detalle_reservaController {
         detalleService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
->>>>>>> Stashed changes
 }

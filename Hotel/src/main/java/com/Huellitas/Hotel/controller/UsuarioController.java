@@ -15,7 +15,11 @@ import java.util.List;
 @RequestMapping("/api/usuarios")
 
 public class UsuarioController {
+    private final UsuarioService usuarioService;
 
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
     //Endpoints Crud
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> crearUsuario(@RequestBody @Valid UsuarioRequestDTO datos){
@@ -54,4 +58,9 @@ public class UsuarioController {
     public String panelAdministrador() {
         return "Acceso permitido solo para administrador";
     }
+
+
 }
+
+
+

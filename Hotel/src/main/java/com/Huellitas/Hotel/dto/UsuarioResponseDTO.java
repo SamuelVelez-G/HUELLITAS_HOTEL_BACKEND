@@ -1,5 +1,17 @@
 package com.Huellitas.Hotel.dto;
+//falta crear el model de rol
+//import com.Huellitas.Hotel.model.Rol;
+import com.Huellitas.Hotel.model.Mascota;
 
-public class UsuarioResponseDTO {
+import java.util.List;
+
+public record UsuarioResponseDTO(
+        Long id,
+        String nombre,
+        String telefono,
+        String email,
+        List<MascotaResumenDTO> mascotas
+
+){
 
 }

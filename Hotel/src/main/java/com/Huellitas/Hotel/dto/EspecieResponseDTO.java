@@ -1,5 +1,8 @@
 package com.Huellitas.Hotel.dto;
 
-public class EspecieResponseDTO {
+public record EspecieResponseDTO(
+    Long id,
+    String nombre
+) {
 
 }
