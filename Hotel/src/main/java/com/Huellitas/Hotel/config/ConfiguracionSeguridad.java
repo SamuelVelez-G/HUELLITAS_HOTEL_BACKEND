@@ -29,121 +29,53 @@ public class ConfiguracionSeguridad {
     public SecurityFilterChain filtroSeguridad(HttpSecurity http) throws Exception {
 
         http
-                // API REST: no utilizamos CSRF
+                // API REST stateless: desactivamos CSRF
                 .csrf(csrf -> csrf.disable())
 
-                // La autenticación se maneja mediante JWT
+                // Manejo de sesión mediante JWT sin estado
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(
-                                SessionCreationPolicy.STATELESS
-                        )
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
                 .authorizeHttpRequests(auth -> auth
 
                         // =========================
-                        // ENDPOINTS PÚBLICOS
+                        // 1. ENDPOINTS PÚBLICOS (Sin autenticación)
                         // =========================
-
-                        // Login
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/auth/login"
-                        ).permitAll()
-
-                        // Registro de usuarios
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/usuarios"
-                        ).permitAll()
-
-                        // Consultar especies
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/especies",
-                                "/api/especies/**"
-                        ).permitAll()
-
-                        // =========================
-                        // USUARIOS
-                        // =========================
-
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/usuarios"
-                        ).hasAnyRole("ADMIN", "USER")
-
-                        // =========================
-                        // ADMINISTRACIÓN
-                        // =========================
-
-                        .requestMatchers(
-                                "/api/admin/**"
-                        ).hasRole("ADMIN")
-
-                        // Crear veterinarios y especialidades
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/veterinarios",
-                                "/api/especialidades"
-                        ).hasRole("ADMIN")
-
-                        // =========================
-                        // CITAS
-                        // =========================
-
-                        .requestMatchers(
-                                HttpMethod.PATCH,
-                                "/api/citas/*/atender"
-                        ).hasAnyRole("VETERINARIO", "ADMIN")
-
-                        // =========================
-                        // DUEÑOS, MASCOTAS Y CITAS
-                        // =========================
-
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/duenos",
-                                "/api/mascotas",
-                                "/api/citas"
-                        ).hasAnyRole("RECEPCIONISTA", "ADMIN")
-
-                        // =========================
-                        // ELIMINACIONES
-                        // =========================
-
-                        .requestMatchers(
-                                HttpMethod.DELETE,
-                                "/**"
-                        ).hasRole("ADMIN")
-
-                        // =========================
-                        // ERROR
-                        // =========================
-
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/especies", "/api/especies/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/servicios", "/api/servicios/**").permitAll()
                         .requestMatchers("/error").permitAll()
 
                         // =========================
-                        // TODO LO DEMÁS
+                        // 2. ENDPOINTS EXCLUSIVOS DE ADMINISTRADOR
                         // =========================
+                        .requestMatchers("/api/usuarios/admin").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/especies/**", "/api/servicios/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/especies/**", "/api/servicios/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
 
+
+                        // =========================
+                        // 3. ENDPOINTS AUTENTICADOS (USER Y ADMIN)
+                        // =========================
+                        // Permite a usuarios logueados gestionar sus mascotas, reservas y perfil
+                        .requestMatchers("/api/usuarios/**", "/api/mascotas/**", "/api/reservas/**").authenticated()
+
+                        // Cualquier otra ruta requiere estar autenticado
                         .anyRequest().authenticated()
                 )
 
-                // Filtro JWT antes del filtro de autenticación
-                .addFilterBefore(
-                        filtroJwt,
-                        UsernamePasswordAuthenticationFilter.class
-                );
+                // Filtro para validar el Token JWT antes del filtro de usuario/contraseña
+                .addFilterBefore(filtroJwt, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager administradorAutenticacion(
-            AuthenticationConfiguration configuracion
-    ) throws Exception {
-
+    public AuthenticationManager administradorAutenticacion(AuthenticationConfiguration configuracion) throws Exception {
         return configuracion.getAuthenticationManager();
     }
 
