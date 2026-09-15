@@ -43,7 +43,7 @@ git clone https://github.com/SamuelVelez-G/HUELLITAS_HOTEL_BACKEND.git
 cd HUELLITAS_HOTEL_BACKEND/Hotel
 ```
 
-2. Configura la base de datos en `src/main/resources/application.properties`.
+2. Configura la base de datos en `Hotel/src/main/resources/application.properties`.
 
 Ejemplo:
 
