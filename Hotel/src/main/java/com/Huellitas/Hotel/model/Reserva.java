@@ -1,6 +1,5 @@
 package com.Huellitas.Hotel.model;
 
-import aj.org.objectweb.asm.commons.InstructionAdapter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,7 +39,4 @@ public class Reserva {
 
     @OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL)
     private List<DetalleReserva> detalles = new ArrayList<>();
-
-    public InstructionAdapter getDetallesReserva() {
-
 }
