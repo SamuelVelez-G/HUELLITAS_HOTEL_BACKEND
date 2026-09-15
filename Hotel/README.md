@@ -175,8 +175,8 @@ Los endpoints administrativos y los recursos de usuarios, mascotas y reservas re
 
 ## Contacto
 
-- Email: hotel.huellitas@gmail.com
-- Teléfono: +57 (322) 822 8498
+- Email: hotel.huellitas2026@gmail.com
+- Teléfono: +57 (301) 123 4567
 - Ubicación: Calle 68 B Sur # 63 - 55
 
 ---
