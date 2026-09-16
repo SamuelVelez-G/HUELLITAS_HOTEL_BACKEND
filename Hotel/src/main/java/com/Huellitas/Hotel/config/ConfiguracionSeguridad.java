@@ -37,6 +37,7 @@ public class ConfiguracionSeguridad {
                 // Habilitar la configuración de CORS vinculada al Bean
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
+
                 // API REST stateless: desactivamos CSRF
                 .csrf(csrf -> csrf.disable())
 
@@ -50,11 +51,17 @@ public class ConfiguracionSeguridad {
                         // =========================
                         // 1. ENDPOINTS PÚBLICOS (Sin autenticación)
                         // =========================
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/especies", "/api/especies/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/servicios", "/api/servicios/**").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
 
                         // =========================
                         // 2. ENDPOINTS EXCLUSIVOS DE ADMINISTRADOR
@@ -101,11 +108,13 @@ public class ConfiguracionSeguridad {
                 "http://localhost:3000",
                 "http://localhost:5173",
                 "http://localhost:4200",
-                "https://samuelvelez-g.github.io/Huellitas-Hotel-Project/"
+                "http://127.0.0.1:5173",
+                "https://samuelvelez-g.github.io"
         ));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
