@@ -13,6 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -29,6 +34,9 @@ public class ConfiguracionSeguridad {
     public SecurityFilterChain filtroSeguridad(HttpSecurity http) throws Exception {
 
         http
+                // Habilitar la configuración de CORS vinculada al Bean
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 // API REST stateless: desactivamos CSRF
                 .csrf(csrf -> csrf.disable())
 
@@ -82,5 +90,26 @@ public class ConfiguracionSeguridad {
     @Bean
     public PasswordEncoder codificadorContrasena() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // Lista de orígenes permitidos (Frontend local + el enlace de GitHub Pages)
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "http://localhost:4200",
+                "https://samuelvelez-g.github.io/Huellitas-Hotel-Project/"
+        ));
+
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
